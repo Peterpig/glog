@@ -71,3 +71,25 @@ var (
 		return ret
 	}()
 )
+
+const (
+	FieldKeyTime = "time"
+	// FieldKeyDate  = "date"
+	FieldKeyData = "data"
+	// NOTICE: you must set `Logger.ReportCaller=true` for "func", "file"
+	FieldKeyFunc = "func"
+	FieldKeyFile = "file"
+
+	FieldKeyDatetime  = "datetime"
+	FieldKeyPosition  = "position"
+	FieldKeyTimestamp = "timestamp"
+
+	FieldKeyLevel = "level"
+	FieldKeyError = "error"
+	FieldKeyExtra = "extra"
+
+	// NOTICE: you must set `Logger.ReportCaller=true` for "caller"
+	FieldKeyCaller  = "caller"
+	FieldKeyChannel = "channel"
+	FieldKeyMessage = "message"
+)

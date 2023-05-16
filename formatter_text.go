@@ -1,6 +1,7 @@
 package glog
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -30,10 +31,15 @@ func (f *TextFormatter) Format(record *Record) ([]byte, error) {
 	if f.EnableColor {
 		return f.formatWithColor(record)
 	}
+	return f.formatWithColor(record)
 }
 
 func (f *TextFormatter) formatWithColor(record *Record) ([]byte, error) {
 
+	// tplData := make(map[string]string, len(f.fieldMap))
+	for field, tplVal := range f.fieldMap {
+		fmt.Printf("field:%s,tplVal:%s\n", field, tplVal)
+	}
 	return nil, nil
 }
 

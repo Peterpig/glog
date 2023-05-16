@@ -84,15 +84,15 @@ func (log *Logger) writeRecord(level Level, r *Record) {
 
 			if err := handler.Handle(r); err != nil {
 				log.err = err
-				fmt.Fprintln(os.Stderr, "glog handler error, %v", err)
+				fmt.Fprintln(os.Stderr, "glog handler error, ", err)
 			}
 		}
 	}
 
-	if level <= ErrorLevel {
-	}
+	// if level <= ErrorLevel {
+	// }
 
-	if level <= PanicLevel {
-	}
+	// if level <= PanicLevel {
+	// }
 
 }

@@ -31,6 +31,7 @@ func newRecord(logger *Logger) *Record {
 func (r *Record) Log(level Level, format string, args ...interface{}) {
 	r.Level = level
 	r.Message = fmt.Sprintf(format, args...)
+	r.logger.writeRecord(level, r)
 }
 
 func (r *Record) Init(lowerLevelName bool) {

@@ -47,7 +47,7 @@ func newStdLogger() *SugaredLogger {
 var glog = newStdLogger()
 
 func Debug(format string, v ...interface{}) {
-	glog.Log(DebugLevel, format, v)
+	glog.Log(DebugLevel, format, v...)
 }
 
 func Info(format string, v ...interface{}) {
@@ -63,7 +63,7 @@ func Warn(format string, v ...interface{}) {
 }
 
 func Error(format string, v ...interface{}) {
-	glog.Log(ErrorLevel, format, v)
+	glog.Log(ErrorLevel, format, v...)
 }
 
 func Fatal(format string, v ...interface{}) {
