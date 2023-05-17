@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gookit/color"
-	"github.com/valyala/bytebufferpool"
 )
 
 var ColorTheme = map[Level]color.Color{
@@ -28,46 +27,46 @@ type TextFormatter struct {
 	ColorTheme  map[Level]color.Color
 }
 
-var textPool bytebufferpool.Pool
-
 func (f *TextFormatter) Format(record *Record) ([]byte, error) {
-	buf := textPool.Get()
-	defer textPool.Put(buf)
 
 	fieldLen := len(f.fields)
-	for i, field := range f.fields {
-		fmt.Printf("field:%s\n", field)
+	pars := make([]string, fieldLen*2)
+
+	for _, field := range f.fields {
+		tempKey := fmt.Sprintf("{{%s}}", field)
+
+		var tmpVal string
 
 		switch {
 		case field == FieldKeyDatetime:
-			buf.B = record.Time.AppendFormat(buf.B, f.TimeFormat)
+			tmpVal = record.Time.Format(f.TimeFormat)
 		case field == FieldKeyCaller && record.Caller != nil:
-			buf.WriteString(formatCaller(record.Caller, false))
+			tmpVal = formatCaller(record.Caller, false)
 		case field == FieldKeyLevel:
 			if f.EnableColor {
-				buf.WriteString(f.renderColorByLevel(record.Level.Name(), record.Level))
+				tmpVal = f.renderColorByLevel(record.Level.Name(), record.Level)
 			} else {
-				buf.WriteString(record.Level.Name())
+				tmpVal = record.Level.Name()
 			}
 		case field == FieldKeyMessage:
 			if f.EnableColor {
-				buf.WriteString(f.renderColorByLevel(record.Message, record.Level))
+				tmpVal = f.renderColorByLevel(record.Message, record.Level)
 			} else {
-				buf.WriteString(record.Level.Name())
+				tmpVal = record.Message
 			}
 		default:
 			if _, ok := record.Fields[field]; ok {
-				buf.WriteString(fmt.Sprintf("%v", record.Fields[field]))
+				tmpVal = fmt.Sprintf("%v", record.Fields[field])
 			} else {
-				buf.WriteString(field)
+				tmpVal = field
 			}
 		}
-		if i <= fieldLen-1 {
-			buf.WriteString(" ")
-		}
 
+		pars = append(pars, tempKey, tmpVal)
 	}
-	return buf.B, nil
+
+	str := strings.NewReplacer(pars...).Replace(f.template)
+	return []byte(str), nil
 }
 
 func NewTextFormatter(template ...string) *TextFormatter {

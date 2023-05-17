@@ -7,10 +7,9 @@ import (
 )
 
 type Logger struct {
-	name       string
-	err        error
-	handlers   []Handler
-	processors []Processor
+	name     string
+	err      error
+	handlers []Handler
 
 	mu sync.Mutex
 
@@ -84,10 +83,6 @@ func (log *Logger) writeRecord(level Level, r *Record) {
 					}
 					log.mu.Unlock()
 				}
-
-				for i := range log.processors {
-					log.processors[i].Process(r)
-				}
 			}
 
 			if err := handler.Handle(r); err != nil {
@@ -96,11 +91,4 @@ func (log *Logger) writeRecord(level Level, r *Record) {
 			}
 		}
 	}
-
-	// if level <= ErrorLevel {
-	// }
-
-	// if level <= PanicLevel {
-	// }
-
 }
