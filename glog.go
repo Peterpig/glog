@@ -3,6 +3,8 @@ package glog
 import (
 	"io"
 	"os"
+
+	"github.com/gookit/color"
 )
 
 type SugaredLogger struct {
@@ -35,7 +37,8 @@ func NewSugaredLogger(output io.Writer, level Level) *SugaredLogger {
 		Logger:    New(),
 		Formatter: NewTextFormatter(),
 	}
-
+	sg.ReportCaller = true
+	sg.Formatter.(*TextFormatter).EnableColor = color.SupportColor()
 	sg.AddHandler(sg)
 	return sg
 }

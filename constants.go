@@ -21,7 +21,7 @@ type M map[string]interface{}
 type StringMap map[string]string
 
 var (
-	DefaultTimeFormat = "2006/01/02 15:04:05"
+	DefaultTimeFormat = "2006-01-02 15:04:05"
 )
 
 const (
@@ -73,16 +73,15 @@ var (
 )
 
 const (
-	FieldKeyTime = "time"
-	// FieldKeyDate  = "date"
-	FieldKeyData = "data"
-	// NOTICE: you must set `Logger.ReportCaller=true` for "func", "file"
-	FieldKeyFunc = "func"
-	FieldKeyFile = "file"
+	CallerFlagFnlFn uint8 = iota
+)
 
-	FieldKeyDatetime  = "datetime"
-	FieldKeyPosition  = "position"
-	FieldKeyTimestamp = "timestamp"
+const (
+	FieldKeyData = "data"
+
+	FieldKeyTime     = "time"
+	FieldKeyDate     = "date"
+	FieldKeyDatetime = "datetime"
 
 	FieldKeyLevel = "level"
 	FieldKeyError = "error"
@@ -90,6 +89,5 @@ const (
 
 	// NOTICE: you must set `Logger.ReportCaller=true` for "caller"
 	FieldKeyCaller  = "caller"
-	FieldKeyChannel = "channel"
 	FieldKeyMessage = "message"
 )

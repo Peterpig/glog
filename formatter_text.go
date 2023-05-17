@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gookit/color"
+	"github.com/valyala/bytebufferpool"
 )
 
 var ColorTheme = map[Level]color.Color{
@@ -17,30 +18,56 @@ var ColorTheme = map[Level]color.Color{
 	DebugLevel:  color.FgCyan,
 }
 
-const DefaultTemplate = "[{{datetime}}] [{{channel}}] [{{level}}] [{{caller}}] {{message}} {{data}} {{extra}}\n"
+const DefaultTemplate = "[{{datetime}}] [{{level}}] [{{caller}}] {{message}}\n"
 
 type TextFormatter struct {
 	template    string
-	fieldMap    StringMap
+	fields      []string
 	TimeFormat  string
 	EnableColor bool
 	ColorTheme  map[Level]color.Color
 }
 
+var textPool bytebufferpool.Pool
+
 func (f *TextFormatter) Format(record *Record) ([]byte, error) {
-	if f.EnableColor {
-		return f.formatWithColor(record)
-	}
-	return f.formatWithColor(record)
-}
+	buf := textPool.Get()
+	defer textPool.Put(buf)
 
-func (f *TextFormatter) formatWithColor(record *Record) ([]byte, error) {
+	fieldLen := len(f.fields)
+	for i, field := range f.fields {
+		fmt.Printf("field:%s\n", field)
 
-	// tplData := make(map[string]string, len(f.fieldMap))
-	for field, tplVal := range f.fieldMap {
-		fmt.Printf("field:%s,tplVal:%s\n", field, tplVal)
+		switch {
+		case field == FieldKeyDatetime:
+			buf.B = record.Time.AppendFormat(buf.B, f.TimeFormat)
+		case field == FieldKeyCaller && record.Caller != nil:
+			buf.WriteString(formatCaller(record.Caller, false))
+		case field == FieldKeyLevel:
+			if f.EnableColor {
+				buf.WriteString(f.renderColorByLevel(record.Level.Name(), record.Level))
+			} else {
+				buf.WriteString(record.Level.Name())
+			}
+		case field == FieldKeyMessage:
+			if f.EnableColor {
+				buf.WriteString(f.renderColorByLevel(record.Message, record.Level))
+			} else {
+				buf.WriteString(record.Level.Name())
+			}
+		default:
+			if _, ok := record.Fields[field]; ok {
+				buf.WriteString(fmt.Sprintf("%v", record.Fields[field]))
+			} else {
+				buf.WriteString(field)
+			}
+		}
+		if i <= fieldLen-1 {
+			buf.WriteString(" ")
+		}
+
 	}
-	return nil, nil
+	return buf.B, nil
 }
 
 func NewTextFormatter(template ...string) *TextFormatter {
@@ -53,22 +80,25 @@ func NewTextFormatter(template ...string) *TextFormatter {
 
 	return &TextFormatter{
 		template:   fmtTpl,
-		fieldMap:   parseFieldMap(fmtTpl),
+		fields:     parseTemplateToFeilds(fmtTpl),
 		TimeFormat: DefaultTimeFormat,
 		ColorTheme: ColorTheme,
 	}
 }
 
-// parse string "{{channel}}" to map { "channel": "{{channel}}" }
-func parseFieldMap(format string) StringMap {
-	reg := regexp.MustCompile(`{{\w+}}`)
-
-	ss := reg.FindAllString(format, -1)
-	fmt := make(StringMap)
-
-	for _, tplVal := range ss {
-		field := strings.Trim(tplVal, "{}")
-		fmt[field] = tplVal
+func parseTemplateToFeilds(tplStr string) []string {
+	re := regexp.MustCompile(`{{\w+}}`)
+	ss := re.FindAllString(tplStr, -1)
+	fields := make([]string, 0, len(ss)*2)
+	for _, tplVar := range ss {
+		fields = append(fields, strings.Trim(tplVar, "{}"))
 	}
-	return fmt
+	return fields
+}
+
+func (f *TextFormatter) renderColorByLevel(text string, level Level) string {
+	if them, ok := f.ColorTheme[level]; ok {
+		return them.Render(text)
+	}
+	return text
 }

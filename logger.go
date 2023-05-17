@@ -14,7 +14,10 @@ type Logger struct {
 
 	mu sync.Mutex
 
-	ReportCaller   bool
+	ReportCaller bool
+	CallerFlag   uint8
+	CallerSkip   int
+
 	recordPool     sync.Pool
 	LowerLevelName bool
 }
@@ -25,7 +28,8 @@ func New() *Logger {
 
 func NewWithName(name string) *Logger {
 	logger := &Logger{
-		name: name,
+		name:       name,
+		CallerSkip: 6,
 	}
 
 	logger.recordPool.New = func() interface{} {
@@ -74,6 +78,10 @@ func (log *Logger) writeRecord(level Level, r *Record) {
 
 				if log.ReportCaller {
 					log.mu.Lock()
+					caller, ok := getCaller(r.CallerSkip)
+					if ok {
+						r.Caller = &caller
+					}
 					log.mu.Unlock()
 				}
 

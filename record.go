@@ -2,6 +2,7 @@ package glog
 
 import (
 	"fmt"
+	"runtime"
 	"time"
 )
 
@@ -17,6 +18,10 @@ type Record struct {
 	Data   M
 	Extra  M
 	Fields M
+
+	Caller     *runtime.Frame
+	CallerFlag uint8
+	CallerSkip int
 }
 
 func newRecord(logger *Logger) *Record {
@@ -25,6 +30,9 @@ func newRecord(logger *Logger) *Record {
 		Data:   make(M, 3),
 		Extra:  make(M, 3),
 		Fields: make(M, 3),
+
+		CallerFlag: logger.CallerFlag,
+		CallerSkip: logger.CallerSkip,
 	}
 }
 
