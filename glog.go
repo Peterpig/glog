@@ -49,6 +49,10 @@ func newStdLogger() *SugaredLogger {
 
 var glog = newStdLogger()
 
+func SetFormate(f Formatter) {
+	glog.Formatter = f
+}
+
 func Debug(format string, v ...interface{}) {
 	glog.Log(DebugLevel, format, v...)
 }

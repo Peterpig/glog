@@ -77,17 +77,23 @@ const (
 )
 
 const (
-	FieldKeyData = "data"
-
 	FieldKeyTime     = "time"
 	FieldKeyDate     = "date"
 	FieldKeyDatetime = "datetime"
 
 	FieldKeyLevel = "level"
 	FieldKeyError = "error"
-	FieldKeyExtra = "extra"
 
 	// NOTICE: you must set `Logger.ReportCaller=true` for "caller"
 	FieldKeyCaller  = "caller"
 	FieldKeyMessage = "message"
+)
+
+var (
+	DefaultFields = []string{
+		FieldKeyDatetime,
+		FieldKeyLevel,
+		FieldKeyCaller,
+		FieldKeyMessage,
+	}
 )
