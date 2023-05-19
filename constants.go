@@ -1,6 +1,9 @@
 package glog
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 type Level uint32
 
@@ -22,6 +25,7 @@ type StringMap map[string]string
 
 var (
 	DefaultTimeFormat = "2006-01-02 15:04:05"
+	flushInterval     = 10 * time.Second
 )
 
 const (

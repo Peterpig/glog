@@ -76,3 +76,11 @@ func Error(format string, v ...interface{}) {
 func Fatal(format string, v ...interface{}) {
 	glog.Log(FatalLevel, format, v...)
 }
+
+func AddHandler(h ...Handler) {
+	glog.AddHandler(h...)
+}
+
+func SetHandler(h []Handler) {
+	glog.SetHandler(h)
+}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 )
 
 type Logger struct {
@@ -34,6 +35,8 @@ func NewWithName(name string) *Logger {
 	logger.recordPool.New = func() interface{} {
 		return newRecord(logger)
 	}
+
+	go logger.FlushDaemon()
 	return logger
 }
 
@@ -49,6 +52,10 @@ func (log *Logger) AddHandler(handler ...Handler) {
 	if len(handler) > 0 {
 		log.handlers = append(log.handlers, handler...)
 	}
+}
+
+func (log *Logger) SetHandler(handler []Handler) {
+	log.handlers = handler
 }
 
 func (log *Logger) Log(level Level, format string, args ...interface{}) {
@@ -68,7 +75,6 @@ func (log *Logger) releaseRecord(r *Record) {
 }
 
 func (log *Logger) writeRecord(level Level, r *Record) {
-
 	var inited bool
 	for _, handler := range log.handlers {
 		if handler.IsHandling(level) {
@@ -90,5 +96,26 @@ func (log *Logger) writeRecord(level Level, r *Record) {
 				fmt.Fprintln(os.Stderr, "glog handler error, ", err)
 			}
 		}
+	}
+	if level <= ErrorLevel {
+		log.lockAndFlushAll()
+	}
+}
+
+func (log *Logger) FlushDaemon() {
+	for range time.NewTicker(flushInterval).C {
+		log.lockAndFlushAll()
+	}
+}
+
+func (log *Logger) lockAndFlushAll() {
+	log.mu.Lock()
+	defer log.mu.Unlock()
+	log.FlushAll()
+}
+
+func (log *Logger) FlushAll() {
+	for _, handler := range log.handlers {
+		_ = handler.Flush()
 	}
 }
