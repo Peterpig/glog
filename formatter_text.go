@@ -32,10 +32,9 @@ func (f *TextFormatter) Format(record *Record) ([]byte, error) {
 	fieldLen := len(f.fields)
 	pars := make([]string, fieldLen*2)
 
+	var tmpVal string
 	for _, field := range f.fields {
 		tempKey := fmt.Sprintf("{{%s}}", field)
-
-		var tmpVal string
 
 		switch {
 		case field == FieldKeyDatetime:
