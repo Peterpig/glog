@@ -34,8 +34,15 @@ func NewFileHandler(fpath string, useJSON bool) *FileHandler {
 			Levels: glog.ALLlevels,
 		},
 	}
+	if useJSON {
+		h.SetFormatter(glog.NewJSONFormatter())
+	}
 
 	return h
+}
+
+func NewJosnFileHandler(fpath string) *FileHandler {
+	return NewFileHandler(fpath, true)
 }
 
 func (h *FileHandler) Sync() error {

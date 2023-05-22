@@ -37,3 +37,10 @@ func TestFileHandler(t *testing.T) {
 	glog.Info("文件写入测试")
 	glog.Error("文件写入错误测试")
 }
+
+func TestFileJsonHandler(t *testing.T) {
+	fileHandler := handler.NewJosnFileHandler("test.log")
+	glog.AddHandler(fileHandler)
+	glog.Info("文件写入josn测试")
+	glog.Error("文件写入json错误测试")
+}
