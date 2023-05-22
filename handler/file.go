@@ -12,7 +12,7 @@ import (
 const defaultMaxSize uint64 = 1024 * 1024 * 1000
 
 type FileHandler struct {
-	glog.BaseHandler
+	BaseHandler
 
 	mu sync.Mutex
 
@@ -30,7 +30,7 @@ func NewFileHandler(fpath string, useJSON bool) *FileHandler {
 		fpath:   fpath,
 		useJSON: useJSON,
 		MaxSize: defaultMaxSize,
-		BaseHandler: glog.BaseHandler{
+		BaseHandler: BaseHandler{
 			Levels: glog.ALLlevels,
 		},
 	}

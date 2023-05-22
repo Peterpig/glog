@@ -32,7 +32,8 @@ func TestJosnFormatterIndent(t *testing.T) {
 }
 
 func TestFileHandler(t *testing.T) {
-	glog.AddHandler(handler.NewFileHandler("test.log", false))
+	fileHandler := handler.NewFileHandler("test.log", false)
+	glog.AddHandler(fileHandler)
 	glog.Info("文件写入测试")
 	glog.Error("文件写入错误测试")
 }
