@@ -9,7 +9,7 @@ import (
 	"github.com/Peterpig/glog"
 )
 
-const defaultMaxSize uint64 = 1024 * 1024 * 1000
+const DefaultMaxSize uint64 = 1024 * 1024 * 1000
 
 type FileHandler struct {
 	BaseHandler
@@ -29,7 +29,7 @@ func NewFileHandler(fpath string, useJSON bool) *FileHandler {
 	h := &FileHandler{
 		fpath:   fpath,
 		useJSON: useJSON,
-		MaxSize: defaultMaxSize,
+		MaxSize: DefaultMaxSize,
 		BaseHandler: BaseHandler{
 			Levels: glog.ALLlevels,
 		},
@@ -101,4 +101,8 @@ func createFile(fpath string) (file *os.File, err error) {
 		return
 	}
 	return
+}
+
+func OpenFile(fpath string) (file *os.File, err error) {
+	return os.OpenFile(fpath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
 }

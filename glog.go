@@ -81,6 +81,6 @@ func AddHandler(h ...Handler) {
 	glog.AddHandler(h...)
 }
 
-func SetHandler(h []Handler) {
-	glog.SetHandler(h)
+func SetHandler(h ...Handler) {
+	glog.SetHandler(h...)
 }

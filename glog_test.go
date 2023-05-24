@@ -44,3 +44,12 @@ func TestFileJsonHandler(t *testing.T) {
 	glog.Info("文件写入josn测试")
 	glog.Error("文件写入json错误测试")
 }
+
+func TestSizeRotateFileHandler(t *testing.T) {
+	rotateHandler := handler.NewSizeRotateFileHandler("test.log", int(10*1024*1000))
+	glog.SetHandler(rotateHandler)
+
+	for i := 0; i < 1000000; i++ {
+		glog.Info("测试log: {%d}", i)
+	}
+}

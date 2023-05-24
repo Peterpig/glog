@@ -54,7 +54,7 @@ func (log *Logger) AddHandler(handler ...Handler) {
 	}
 }
 
-func (log *Logger) SetHandler(handler []Handler) {
+func (log *Logger) SetHandler(handler ...Handler) {
 	log.handlers = handler
 }
 
